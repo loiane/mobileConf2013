@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Compass</title>
+    </head>
+    <body>
+        <div class="container">
+            
+            <img src="images/rose.png"
+			class="rose" width="120" height="121"
+			alt="rose" />
+            
+            <img src="images/compass.png"
+			class="compass" width="200" height="200"
+			alt="compass" />
+            
+            <div id="heading"></div>
+            
+        </div>
+        
+        <link href="compass_style.css" rel="stylesheet" />
+        <script type="text/javascript" src="cordova-2.5.0.js"></script>
+        <script type="text/javascript" src="xui.js"></script>
+        <script type="text/javascript">
+            // PhoneGap code will go here
+            
+            var headingDiv;
+            
+            x$(document).on("deviceready", function () {
+                            headingDiv = x$("#heading");
+                            navigator.compass.getCurrentHeading(onSuccess, onError);
+                            navigator.compass.watchHeading(onSuccess, onError, {frequency: 100});
+                            
+                            // Run after successful transaction
+                            // Let's display the compass data
+                            function onSuccess(heading) {
+                            headingDiv.html(
+                                            'Heading: ' + heading.magneticHeading + '&#xb0; ' +
+                                            convertToText(heading.magneticHeading) + '<br />' +
+                                            'True Heading: ' + heading.trueHeading + '<br />' +
+                                            'Accuracy: ' + heading.headingAccuracy
+                                            );
+                            
+                            // Alter the CSS properties to rotate the rose image
+                            x$(".rose").css({
+                                            "-webkit-transform":
+                                            "rotate(-" + heading.magneticHeading + "deg)",
+                                            "transform":
+                                            "rotate(-" + heading.magneticHeading + "deg)"
+                                            });
+                            }
+                            
+                            // Run if we face an error
+                            // obtaining the compass data
+                            function onError() {
+                            headingDiv.html(
+                                            'There was an error trying to ' +
+                                            'locate your current bearing.'
+                                            );
+                            }
+                            
+                            });
+            
+            // Accept the magneticHeading value
+            // and convert into a text representation
+            function convertToText(mh) {
+                var textDirection;
+                if (typeof mh !== "number") {
+                    textDirection = ''; 
+                } else if (mh >= 337.5 || (mh >= 0 &&  mh <= 22.5)) {
+                    textDirection =  'N'; 
+                } else if (mh >= 22.5 && mh <= 67.5) {
+                    textDirection =  'NE'; 
+                } else if (mh >= 67.5 && mh <= 112.5) {
+                    textDirection =  'E'; 
+                } else if (mh >= 112.5 && mh <= 157.5) {
+                    textDirection =  'SE'; 
+                } else if (mh >= 157.5 && mh <= 202.5) {
+                    textDirection =  'S'; 
+                } else if (mh >= 202.5 && mh <= 247.5) {
+                    textDirection =  'SW'; 
+                } else if (mh >= 247.5 && mh <= 292.5) {
+                    textDirection =  'W'; 
+                } else if (mh >= 292.5 && mh <= 337.5) {
+                    textDirection =  'NW'; 
+                } else {
+                    textDirection =  textDirection;
+                }
+                return textDirection;
+            }
+        </script>
+    </body>
+</html>
